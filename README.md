@@ -2,6 +2,7 @@
 오픈소스AI응용 14조 기말팀플과제
 
 
+
 ## 요구사항
 - OS : windows 64bit
 - Python version : 3.11
