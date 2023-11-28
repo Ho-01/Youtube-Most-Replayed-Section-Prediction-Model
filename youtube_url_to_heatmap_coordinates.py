@@ -12,7 +12,7 @@ youtube_url_test = "https://www.youtube.com/watch?v=X7158uQk1yI"
 
 
 
-# 크롬 웹드라이버 초기설정
+# 크롬 웹드라이버 초기설정하는 함수, 매번 테스트브라우저가 열리고 닫히기 때문에 웹드라이버도 매번 설정해줘야 한다
 def init_driver():
     options = webdriver.ChromeOptions()
     options.binary_location = './chrome-win64/chrome'  # 로컬pc에 설치된 크롬을 사용하지 않고, 프로젝트 폴더의 chrome-for-testing을 사용하도록 경로 설정. 크롬버전문제때문에 이렇게 함
