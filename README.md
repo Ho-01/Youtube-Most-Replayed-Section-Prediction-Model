@@ -43,6 +43,12 @@
 ### word2vec.py
 - 마찬가지로 SBERT 사용할 시 word2vec을 사용할 이유가 없으므로 삭제할 예정.
 
+### bfg-1.14.0.jar
+- 깃허브 업로드제한 100MB를 넘는 파일 업로드를 위해 추가
+- 다운로드 링크 : https://rtyley.github.io/bfg-repo-cleaner/
+- lfs 참고링크 : https://newsight.tistory.com/330
+- bfg 참고링크 : https://velog.io/@yoogail/%EB%8C%80%EC%9A%A9%EB%9F%89-%ED%8C%8C%EC%9D%BC-github%EC%97%90-push%ED%95%A0-%EB%95%8C-%EC%83%9D%EA%B8%B0%EB%8A%94-%EC%98%A4%EB%A5%98-%EC%A0%95%EB%B3%B5%ED%95%98%EA%B8%B0feat.-git-lfs-bfg
+
 ## 추가할 것
 - SBERT
 - x,y 데이터 라벨링하는 코드
