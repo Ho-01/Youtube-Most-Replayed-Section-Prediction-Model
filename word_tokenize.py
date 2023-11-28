@@ -52,7 +52,7 @@ for i in range(0, len(transcript)):
     # 토큰화+불용어 제거 완료된 문장을 word_tokenized_transcript 에 append
     word_tokenized_transcript.append(result)
 
-# print(word_tokenized_transcript)
+print(word_tokenized_transcript)
 
 
 
