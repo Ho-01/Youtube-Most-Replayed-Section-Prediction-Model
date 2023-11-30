@@ -12,6 +12,7 @@
   - nltk (3.8.1)
   - selenium 
   - gensim
+  - transformers (4.32.1)
 
 ## 파일별 설명 및 실행방법
 ### chrome-win64 폴더
@@ -42,6 +43,10 @@
 
 ### word2vec.py
 - 마찬가지로 SBERT 사용할 시 word2vec을 사용할 이유가 없으므로 삭제할 예정.
+
+### bert.py
+- bert를 사용해 토큰화, 임베딩까지 모두 수행하는 코드
+- 문장을 (1,768)사이즈를 가지는 torch tensor로 바꿔준다.
 
 ### bfg-1.14.0.jar
 - 깃허브 업로드제한 100MB를 넘는 파일 업로드를 위해 추가
