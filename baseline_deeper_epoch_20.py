@@ -76,7 +76,11 @@ class BERTRegressor(nn.Module):
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         self.regressor = nn.Sequential(
             nn.Dropout(drop_rate),
-            nn.Linear(config.hidden_size, 1),
+            nn.Linear(config.hidden_size, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.Tanh(),
+            nn.Linear(128, 1)
         )
 
     def forward(self, input_ids, attention_masks):
@@ -134,7 +138,7 @@ def train(model, optimizer, scheduler, loss_function, epochs,
             print('Test loss: {}'.format(costs / bn))
             wandb.log({'test/epoch_cost': costs / bn})
 
-        torch.save(model.state_dict(), './model/bert_baseline.pt')
+        torch.save(model.state_dict(), './model/bert_baseline_deeper_epoch_20.pt')
     wandb.finish()
     return model
 
@@ -155,14 +159,14 @@ def main():
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d_%H-%M-%S")
     wandb.init(project="openai",
-               name='bert_baseline_{}'.format(dt_string)
+               name='bert_baseline_deeper_epoch_20_{}'.format(dt_string)
                )
 
     # Set args
     test_size = 0.1
     seed = 42
     batch_size = 32
-    epochs = 30
+    epochs = 20
 
     # Data load
     URL = "https://www.youtube.com/watch?v=X7158uQk1yI"
@@ -247,6 +251,7 @@ def main():
     obvious_graph(y_pred)
     target_graph(target)
     comparison_graph(y_pred, target)
+    print(y_pred)
     print('======================================================')
     print('Total Length of test dataset:', val_sets.shape[0])
     print('Most-replayed point:', y_pred.index(max(y_pred)))

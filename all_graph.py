@@ -39,7 +39,7 @@ def basic_graph(list):
                      facecolor="grey",  # The fill color
                      color='grey',  # The outline color
                      alpha=0.2)  # Transparency of the fill
-    plt.savefig(f'./baseline_deeper_graph/basic.png', dpi=300)
+    plt.savefig(f'./baseline_deeper_20_graph/basic.png', dpi=300)
     plt.close()
     # plt.show()
 
@@ -70,7 +70,7 @@ def obvious_graph(list):
                      facecolor="grey",  # The fill color
                      color='grey',  # The outline color
                      alpha=0.2)  # Transparency of the fill
-    plt.savefig(f'./baseline_deeper_graph/obvious-graph.png', dpi=300)
+    plt.savefig(f'./baseline_deeper_20_graph/obvious-graph.png', dpi=300)
     plt.close()
     # plt.show()
 
@@ -88,7 +88,7 @@ def target_graph(list):
                      facecolor="grey",  # The fill color
                      color='grey',  # The outline color
                      alpha=0.2)  # Transparency of the fill
-    plt.savefig(f'./baseline_deeper_graph/target.png', dpi=300)
+    plt.savefig(f'./baseline_deeper_20_graph/target.png', dpi=300)
     plt.close()
     # plt.show()
 
@@ -133,7 +133,7 @@ def comparison_graph(list, target):
                      alpha=0.2)  # Transparency of the fill
 
     plt.legend()
-    plt.savefig(f'./baseline_deeper_graph/comparison-graph.png', dpi=300)
+    plt.savefig(f'./baseline_deeper_20_graph/comparison-graph.png', dpi=300)
     plt.close()
     # plt.show()
 

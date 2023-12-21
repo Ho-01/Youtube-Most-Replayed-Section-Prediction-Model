@@ -1,5 +1,7 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_url_to_heatmap_coordinates import youtube_url_to_heatmap_coordinates
+from all_graph import basic_graph, obvious_graph, target_graph, comparison_graph
+
 import pandas as pd
 import numpy as np
 import torch
@@ -11,9 +13,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset, DataLoader
 from transformers import get_linear_schedule_with_warmup
+from torch.nn.utils.clip_grad import clip_grad_norm
 from transformers import AdamW
-
 import wandb
+
+from datetime import datetime
 
 wandb.login(key="f4d64ffeb02e32c7b21d705a5a6316dacd7ffb0f")
 
@@ -72,11 +76,7 @@ class BERTRegressor(nn.Module):
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         self.regressor = nn.Sequential(
             nn.Dropout(drop_rate),
-            nn.Linear(config.hidden_size, 128),
-            nn.ReLU(),
-            nn.Linear(128, 128),
-            nn.Tanh(),
-            nn.Linear(128, 1)
+            nn.Linear(config.hidden_size, 1),
         )
 
     def forward(self, input_ids, attention_masks):
@@ -87,17 +87,17 @@ class BERTRegressor(nn.Module):
 
 
 def train(model, optimizer, scheduler, loss_function, epochs,
-          train_dataloader, test_dataloader, device):
+          train_dataloader, test_dataloader, device, clip_value=2):
     for epoch in range(epochs):
-        train_loss = 0
+        costs = 0
         bn = 0
         model.train()
         for step, batch in enumerate(train_dataloader):
             bn += 1
 
-            optimizer.zero_grad()
-
             batch_inputs, batch_masks, batch_labels = tuple(b.to('cpu') for b in batch)
+
+            model.zero_grad()
 
             outputs = model(batch_inputs, batch_masks)
 
@@ -105,19 +105,20 @@ def train(model, optimizer, scheduler, loss_function, epochs,
                                  batch_labels.squeeze().to(torch.float32))
 
             loss.backward()
+            clip_grad_norm(model.parameters(), clip_value)
             optimizer.step()
             scheduler.step()
 
-            train_loss += loss.item()
+            costs += loss.item()
 
             print('Epoch: {}, Batch: {}, Cost: {:.10f}'.format(epoch, step, loss.item()))
             wandb.log({'train/batch_cost': loss.item()})
-        print('Epoch: {}, Cost: {}'.format(epoch, train_loss / bn))
-        wandb.log({'train/epoch_cost': train_loss / bn})
+        print('Epoch: {}, Cost: {}'.format(epoch, costs / bn))
+        wandb.log({'train/epoch_cost': costs / bn})
 
+        costs = 0
         model.eval()
         with torch.no_grad():
-            val_loss = 0
             bn = 0
             for step, batch in enumerate(test_dataloader):
                 bn += 1
@@ -126,15 +127,15 @@ def train(model, optimizer, scheduler, loss_function, epochs,
 
                 outputs = model(batch_inputs, batch_masks)
 
-                loss = loss_function(outputs.squeeze().to(torch.float32),
-                                     batch_labels.squeeze().to(torch.float32))
+                loss = loss_function(outputs, batch_labels)
 
-                val_loss += loss.item()
+                costs += loss.item()
 
-            print('Test loss: {}'.format(val_loss / bn))
-            wandb.log({'test/epoch_cost': val_loss / bn})
-        torch.save(model.state_dict(), './bert_regression_deep.pt')
+            print('Test loss: {}'.format(costs / bn))
+            wandb.log({'test/epoch_cost': costs / bn})
 
+        torch.save(model.state_dict(), './model/bert_baseline_epoch_20.pt')
+    wandb.finish()
     return model
 
 
@@ -151,16 +152,17 @@ def predict(model, dataloader, device):
 
 # Main
 def main():
-
+    now = datetime.now()
+    dt_string = now.strftime("%Y-%m-%d_%H-%M-%S")
     wandb.init(project="openai",
-               name='bert_for_youtube_most_replayed_graph_deep'
+               name='bert_baseline_epoch_20_{}'.format(dt_string)
                )
 
     # Set args
     test_size = 0.1
     seed = 42
     batch_size = 32
-    epochs = 50
+    epochs = 20
 
     # Data load
     URL = "https://www.youtube.com/watch?v=X7158uQk1yI"
@@ -212,14 +214,14 @@ def main():
                                                 num_warmup_steps=0, num_training_steps=total_steps)
 
     model = train(model, optimizer, scheduler, loss_function, epochs,
-                  train_dataloader, test_dataloader, device)
+                  train_dataloader, test_dataloader, device, clip_value=2)
 
 
     # Prediction
     testURL = "https://www.youtube.com/watch?v=L6sbfskaTDQ"
 
     val_sets = data_load(testURL)
-
+    target = val_sets.score.tolist()
     encoded_val_corpus = tokenizer(text=val_sets.text.tolist(),
                   add_special_tokens=True,
                   padding='max_length',
@@ -234,26 +236,19 @@ def main():
                                         val_attention_mask, val_labels, batch_size)
 
     y_pred_scaled = predict(model, val_dataloader, device)
+
     y_test = val_sets.score.to_numpy()
     y_pred = score_scaler.inverse_transform(np.array(y_pred_scaled).reshape(-1,1))
-    y_pred = y_pred.reshape(1, -1).tolist()[0]
-    print('=======================')
-    print('Graph')
-    import matplotlib.pyplot as plt
-    from scipy.ndimage.filters import gaussian_filter1d
-    print(y_pred)
-    x = range(len(y_pred))
-    y = y_pred
-    y = gaussian_filter1d(y, sigma=12)
-    plt.fill_between(x, y, 0,
-                     facecolor="grey",  # The fill color
-                     color='grey',  # The outline color
-                     alpha=0.2)  # Transparency of the fill
 
-    # Show the plot
-    # plt.show()
-    plt.savefig(f'bert-deep.png', dpi=300)
-    print('=======================')
+    y_pred = y_pred.reshape(1, -1).tolist()[0]
+
+    # Graph result
+    basic_graph(y_pred)
+    obvious_graph(y_pred)
+    target_graph(target)
+    comparison_graph(y_pred, target)
+    print(y_pred)
+    print('======================================================')
     print('Total Length of test dataset:', val_sets.shape[0])
     print('Most-replayed point:', y_pred.index(max(y_pred)))
 
