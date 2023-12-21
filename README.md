@@ -157,7 +157,7 @@ attention_mask = np.array(attention_mask)[short_descriptions]
 labels = datasets.score.to_numpy()[short_descriptions]
 ```
 
-4. Dataset Split and Preprocessing
+5. Dataset Split and Preprocessing
 ```
 def create_dataloaders(inputs, masks, labels, batch_size):
     input_tensor = torch.tensor(inputs)
@@ -187,7 +187,7 @@ test_dataloader = create_dataloaders(test_inputs, test_masks,
                                      test_labels, batch_size)
 ```
 
-5. Define
+6. Define args
 ```
 epoch = 5
 config = AutoConfig.from_pretrained('bert-base-uncased')
@@ -202,7 +202,7 @@ scheduler = get_linear_schedule_with_warmup(optimizer,
                                             num_warmup_steps=0, num_training_steps=total_steps)
 ```
 
-6. Model training
+7. Model training
 ```
 class BERTRegressor(nn.Module):
     def __init__(self, config, drop_rate=0.2):
@@ -277,7 +277,7 @@ model = train(model, optimizer, scheduler, loss_function, epochs,
                   train_dataloader, test_dataloader, device, clip_value=2)
 ```
 
-7. Prediction
+8. Prediction
 ```
 def predict(model, dataloader, device):
     model.eval()
@@ -312,7 +312,7 @@ y_pred = score_scaler.inverse_transform(np.array(y_pred_scaled).reshape(-1,1))
 y_pred = y_pred.reshape(1, -1).tolist()[0]
 ```
 
-8. Result
+9. Result
 ```
 ## all_graph.py에서
 ## 모든 plt.savefig(f'./baseline_deeper_20_graph/obvious-graph.png', dpi=300)부분
