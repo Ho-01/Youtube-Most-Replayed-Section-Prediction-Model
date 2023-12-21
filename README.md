@@ -4,6 +4,8 @@ Open-source-AI 14조 📊👪
 Youtube Most-replayed graph prediction  
 using pre-trained Bert model ['bert-base-uncased'](https://huggingface.co/bert-base-uncased)
 
+<br>
+
 ## Requirements
 - OS : windows 64bit
 - Python version : 3.11
@@ -20,6 +22,8 @@ wandb                     0.16.1
 youtube-transcript-api    0.6.1
 transformers              4.32.1 
 ```
+
+<br>
 
 ## Project structure
 ```
@@ -64,6 +68,8 @@ Open-source-AI
 - 다운로드 링크 : https://rtyley.github.io/bfg-repo-cleaner/
 - lfs 참고링크 : https://newsight.tistory.com/330
 - bfg 참고링크 : https://velog.io/@yoogail/%EB%8C%80%EC%9A%A9%EB%9F%89-%ED%8C%8C%EC%9D%BC-github%EC%97%90-push%ED%95%A0-%EB%95%8C-%EC%83%9D%EA%B8%B0%EB%8A%94-%EC%98%A4%EB%A5%98-%EC%A0%95%EB%B3%B5%ED%95%98%EA%B8%B0feat.-git-lfs-bfg
+
+<br>
 
 ## How to run (baseline_epoch_5.py)
 1. Import libraries
