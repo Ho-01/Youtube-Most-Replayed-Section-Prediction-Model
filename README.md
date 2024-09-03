@@ -1,6 +1,6 @@
-
+# Bert를 이용, 유튜브의 '가장 많이 리플레이된 구간' 그래프를 예측하는 모델 생성
 # Prediction of Most-replayed graph by Bert
-Open-source-AI 14조 📊👪   
+  
 Youtube Most-replayed graph prediction  
 using pre-trained Bert model ['bert-base-uncased'](https://huggingface.co/bert-base-uncased)
 
