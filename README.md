@@ -1,4 +1,4 @@
-# Bert를 이용, 유튜브의 '가장 많이 리플레이된 구간' 그래프를 예측하는 모델 생성
+# Bert를 이용, 유튜브의 '가장 많이 다시 본 구간' 그래프를 예측하는 모델 생성
 # Prediction of Most-replayed graph by Bert
   
 Youtube Most-replayed graph prediction  
